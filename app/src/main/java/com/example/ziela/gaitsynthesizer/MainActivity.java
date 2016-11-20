@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -68,6 +69,9 @@ public class MainActivity extends AppCompatActivity
 
     boolean firstStep = true;
 
+    private SensorManager mSensorManager;
+    private Sensor mStepDetectorSensor;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -109,6 +113,9 @@ public class MainActivity extends AppCompatActivity
         verifyAndSetOnTouchListener(v);
 
         textView = (TextView) findViewById(R.id.mainSteps);
+
+        mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+        mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
     }
 
@@ -278,4 +285,14 @@ public class MainActivity extends AppCompatActivity
      * which is packaged with this application.
      */
     public native String stringFromJNI();
+
+    protected void onResume() {
+        super.onResume();
+        mSensorManager.registerListener(this, mStepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
+    }
+
+    protected void onStop() {
+        super.onStop();
+        mSensorManager.unregisterListener(this, mStepDetectorSensor);
+    }
 }

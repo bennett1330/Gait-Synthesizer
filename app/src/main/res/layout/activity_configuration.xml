@@ -19,7 +19,7 @@
         android:layout_centerVertical="true"/>
 
     <TextView
-        android:text="TextView"
+        android:text="Please begin walking to calibrate the sensor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"

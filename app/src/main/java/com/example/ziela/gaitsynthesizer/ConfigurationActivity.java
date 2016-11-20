@@ -49,25 +49,7 @@ public class ConfigurationActivity extends AppCompatActivity implements SensorEv
         mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
         mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
-        //checkCalibration();
     }
-
-    private void checkCalibration(){
-        int steps = 0;
-        //do something like while pedometer is not calibrated. Then outside the while start the new intent
-//        while(steps == 0){
-//            //try to update steps May have to put a thread to sleep or something idk
-//            //System.out.println("Trying to update steps");
-//
-//        }
-
-        //redundancy
-        if (steps == 1) {
-            Intent synthesis = new Intent(ConfigurationActivity.this, MainActivity.class);
-            ConfigurationActivity.this.startActivity(synthesis);
-        }
-    }
-
 
 
     public void onAccuracyChanged(final Sensor sensor, int accuracy){
