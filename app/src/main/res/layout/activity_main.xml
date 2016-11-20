@@ -126,4 +126,13 @@ tools:context="com.example.ziela.gaitsynthesizer.MainActivity">
     android:layout_toRightOf="@+id/button7"
     android:layout_toEndOf="@+id/button7" />
 
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="132dp"
+        android:id="@+id/mainSteps" />
+
 </RelativeLayout>

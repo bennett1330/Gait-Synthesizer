@@ -1,5 +1,9 @@
 package com.example.ziela.gaitsynthesizer;
 
+import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -29,7 +33,7 @@ import android.media.AudioFormat;
 import android.media.AudioManager;
 
 public class MainActivity extends AppCompatActivity
-        implements OnTouchListener {
+        implements OnTouchListener, SensorEventListener {
 
 
     // Used to load the 'native-lib' library on application startup.
@@ -57,6 +61,12 @@ public class MainActivity extends AppCompatActivity
 
     private FrequencyBuffer[] bufferPool = {note1, note2, note3, note4,
                                             note5, note6, note7, note8};
+
+    private int count = 0;
+
+    private TextView textView;
+
+    boolean firstStep = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -97,6 +107,9 @@ public class MainActivity extends AppCompatActivity
 
         v = findViewById(R.id.button8);
         verifyAndSetOnTouchListener(v);
+
+        textView = (TextView) findViewById(R.id.mainSteps);
+
     }
 
     @Override
@@ -126,6 +139,35 @@ public class MainActivity extends AppCompatActivity
         }
 
         return false;
+    }
+
+    public void onSensorChanged(SensorEvent event) {
+        Sensor sensor = event.sensor;
+        float[] values = event.values;
+        int value = -1;
+
+        if (values.length > 0) {
+            value = (int) values[0];
+        }
+
+        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            // For test only. Only allowed value is 1.0 i.e. for step taken
+
+            if (!firstStep)
+                bufferPool[(count-1)%8].stop();
+
+            bufferPool[count%8].play();
+
+            this.count++;
+            textView.setText("Step Detector Detected : " + count);
+
+            firstStep = false;
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+
     }
 
     /**
