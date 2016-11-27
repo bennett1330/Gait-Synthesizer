@@ -63,11 +63,17 @@ public class MainActivity extends AppCompatActivity
     private FrequencyBuffer[] bufferPool = {note1, note2, note3, note4,
                                             note5, note6, note7, note8};
 
-    private int count = 0;
+    private static int stepCount = 0;
 
-    private TextView textView;
+    private TextView stepDisplay;
+    public static TextView timer1Display;
+    public static TextView timer2Display;
+    public static TextView deviationDisplay;
 
     boolean firstStep = true;
+    private int lastStep;
+
+    private Timer timer = new Timer();
 
     private SensorManager mSensorManager;
     private Sensor mStepDetectorSensor;
@@ -112,7 +118,14 @@ public class MainActivity extends AppCompatActivity
         v = findViewById(R.id.button8);
         verifyAndSetOnTouchListener(v);
 
-        textView = (TextView) findViewById(R.id.mainSteps);
+        v = findViewById(R.id.simulatorButton);
+        verifyAndSetOnTouchListener(v);
+
+        stepDisplay = (TextView) findViewById(R.id.mainSteps);
+        timer1Display = (TextView) findViewById(R.id.timer1Text);
+        timer2Display = (TextView) findViewById(R.id.timer2Text);
+        deviationDisplay = (TextView) findViewById(R.id.deviationText);
+
 
         mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
         mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
@@ -150,8 +163,10 @@ public class MainActivity extends AppCompatActivity
 
     public void onSensorChanged(SensorEvent event) {
         Sensor sensor = event.sensor;
+
         float[] values = event.values;
-        int value = -1;
+
+        int value = -1; // ?
 
         if (values.length > 0) {
             value = (int) values[0];
@@ -161,12 +176,12 @@ public class MainActivity extends AppCompatActivity
             // For test only. Only allowed value is 1.0 i.e. for step taken
 
             if (!firstStep)
-                bufferPool[(count-1)%8].stop();
+                bufferPool[(stepCount-1)%8].stop();
 
-            bufferPool[count%8].play();
+            bufferPool[stepCount%8].play();
 
-            this.count++;
-            textView.setText("Step Detector Detected : " + count);
+            this.stepCount++;
+            stepDisplay.setText("Step Detector Detected : " + stepCount);
 
             firstStep = false;
         }
@@ -239,6 +254,20 @@ public class MainActivity extends AppCompatActivity
             case R.id.button8:
                 note8.play();
                 break;
+            case R.id.simulatorButton:
+                timer.listener();
+
+                if (!firstStep)
+                    bufferPool[lastStep].stop();
+
+                bufferPool[stepCount % 8].play();
+                lastStep = stepCount % 8;
+
+                this.stepCount++;
+                stepDisplay.setText("Step Detector Detected : " + stepCount);
+
+                firstStep = false;
+                break;
             default:
                 return;
         }
@@ -295,4 +324,10 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
         mSensorManager.unregisterListener(this, mStepDetectorSensor);
     }
+
+    public static void resetStepCount()
+    {
+        stepCount = 0;
+    }
+
 }
