@@ -13,10 +13,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
-import android.view.View.OnTouchListener;
 
 /**
  * This class will be used for setting up the pedometer.
@@ -25,17 +25,14 @@ import android.view.View.OnTouchListener;
  * phase and THEN pass it to the music synthesis.
  */
 public class ConfigurationActivity extends AppCompatActivity
-        implements SensorEventListener, OnTouchListener
-{
+                                   implements SensorEventListener, OnTouchListener {
     WebView webView;
     private TextView textView, noteTextView;
-
     private SensorManager mSensorManager;
     private Sensor mStepDetectorSensor;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuration);
 
@@ -50,8 +47,11 @@ public class ConfigurationActivity extends AppCompatActivity
         noteTextView = (TextView) findViewById(R.id.inputNoteTextView);
         textView = (TextView) findViewById(R.id.stepsTakenText);
 
-        // again, what are these doing?
+        // SensorManager object provide access to sensors on a phone, stores values related to
+        // sensor readings and provides means of disabling or destructing Sensor objects
         mSensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+        // Sensor object provides access to information specific to the step detector sensor, most
+        // importantly for our uses, the onchange event listener
         mStepDetectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
 
         // get button handle and set listener
@@ -66,17 +66,12 @@ public class ConfigurationActivity extends AppCompatActivity
      *
      * @param event
      */
-    public void onSensorChanged(SensorEvent event)
-    {
+    public void onSensorChanged(SensorEvent event) {
         Sensor sensor = event.sensor;
-
         // once we detect step, calibration is finished, so move to main activity
-        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR)
-        {
+        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
             Intent main = new Intent(ConfigurationActivity.this, MainActivity.class);
-
             ConfigurationActivity.this.startActivity(main);
-
             finish();
         }
     }
@@ -86,22 +81,17 @@ public class ConfigurationActivity extends AppCompatActivity
      * This method detects buttons presses,
      * and bypasses the step detector calibration
      */
-    public boolean onTouch(View v, MotionEvent event)
-    {
-        if (event.getAction() == MotionEvent.ACTION_DOWN)
-        {
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
             Intent main = new Intent(ConfigurationActivity.this, MainActivity.class);
-
             ConfigurationActivity.this.startActivity(main);
-
             finish();
         }
-
         return false;
     }
 
     public void onAccuracyChanged(final Sensor sensor, int accuracy){
-        // shouldn't be called, need to implement SensorEventListener
+        // shouldn't be called, needed to implement SensorEventListener
     }
 
     protected void onResume() {
