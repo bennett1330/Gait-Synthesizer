@@ -18,11 +18,11 @@ public class MainGUI extends View {
     private static float[] circleXPos = new float[8]; // X coordinates of circles
     private static float[] circleYPos = new float[8]; // Y coordinates of circles
 
-    public MainGUI(Context context) {
-        super(context);
+    public MainGUI( Context context ) {
+        super( context );
         instantiateCircleCoordinates(); // populate coordinate arrays
         paint = new Paint();
-        paint.setTextSize(80);
+        paint.setTextSize( 80 );
     }
 
     @Override
