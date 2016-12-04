@@ -59,7 +59,8 @@ public class FrequencyBuffer {
 
         for (int i = 0; i < waveTable.length; i++) {
 //            waveTable[i] = Math.sin(theta);
-            waveTable[i] = Math.sin((2.0 * Math.PI * i / (sampleRateInHz / frequency)));
+//            waveTable[i] = Math.sin((2.0 * Math.PI * i / (sampleRateInHz / frequency)));
+            waveTable[i] = Math.sin( i * 2.0 * Math.PI * frequency / sampleRateInHz );
             noteBuffer[i] = (short) (waveTable[i] * Short.MAX_VALUE);
             //theta += dTheta;
         }
@@ -79,7 +80,6 @@ public class FrequencyBuffer {
     public void play() {
         audioTrack.play();
     }
-
     /**
      * Stop playing the selected track, and reset position in buffer to index 0
      */
@@ -88,7 +88,6 @@ public class FrequencyBuffer {
         audioTrack.reloadStaticData();
         audioTrack.setLoopPoints(0, noteBuffer.length, -1);
     }
-
     /**
      * Frees the resources related to the audio track.
      * Also idk how to delete the object in java. Usually its pretty good tho

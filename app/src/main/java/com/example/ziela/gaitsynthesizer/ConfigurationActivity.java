@@ -36,6 +36,7 @@ public class ConfigurationActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_configuration);
 
+        // TODO
         // display loading gif in browser -- but let's get off the web
         WebView webView = (WebView) findViewById(R.id.web_view);
         webView.setWebViewClient(new WebViewClient());
@@ -60,22 +61,6 @@ public class ConfigurationActivity extends AppCompatActivity
             v.setOnTouchListener(this);
     }
 
-    /**
-     * Called every time a sensor event occurs.
-     * If the event is a STEP_DETECT, launch into MainActivity
-     *
-     * @param event
-     */
-    public void onSensorChanged(SensorEvent event) {
-        Sensor sensor = event.sensor;
-        // once we detect step, calibration is finished, so move to main activity
-        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            Intent main = new Intent(ConfigurationActivity.this, MainActivity.class);
-            ConfigurationActivity.this.startActivity(main);
-            finish();
-        }
-    }
-
     @Override
     /*
      * This method detects buttons presses,
@@ -90,17 +75,30 @@ public class ConfigurationActivity extends AppCompatActivity
         return false;
     }
 
-    public void onAccuracyChanged(final Sensor sensor, int accuracy){
-        // shouldn't be called, needed to implement SensorEventListener
+    /**
+     * Called every time a sensor event occurs.
+     * If the event is a STEP_DETECT, launch into MainActivity
+     *
+     * @param event
+     */
+    public void onSensorChanged(SensorEvent event) {
+        Sensor sensor = event.sensor;
+        // once we detect a step, calibration is finished, so move to main activity
+        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            Intent main = new Intent(ConfigurationActivity.this, MainActivity.class);
+            ConfigurationActivity.this.startActivity(main);
+            finish();
+        }
     }
-
     protected void onResume() {
         super.onResume();
         mSensorManager.registerListener(this, mStepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
-
     protected void onStop() {
         super.onStop();
         mSensorManager.unregisterListener(this, mStepDetectorSensor);
+    }
+    public void onAccuracyChanged(final Sensor sensor, int accuracy){
+        // shouldn't be called, needed to implement SensorEventListener
     }
 }

@@ -6,7 +6,7 @@ package com.example.ziela.gaitsynthesizer;
  * through the musical sequence depending on how regular their ratio is.
  */
 public class Timer {
-    private double tolerance = 0.1;
+    private double tolerance = 0.15;
 
     private boolean TIMER_IDLE = true;
     private long startTime;
@@ -53,18 +53,17 @@ public class Timer {
     public void compareStepIntervals() {
         if (bufferFilled()) {
             deviation = (double) stepIntervals[0] / stepIntervals[1];
-//            MainActivity.setDeviationDisplay("Deviation: " +
-//                    String.format("%.1f", (deviation * 100) - 100) + "%");
+       //     MainActivity.setDeviationDisplay("Deviation: " +
+       //             String.format("%.1f", (deviation * 100) - 100) + "%");
             if (outsideTolerance()) {
                 resetMetrics();
             }
         }
     }
 
-     public boolean outsideTolerance() {
+    public boolean outsideTolerance() {
         return Math.abs(1 - deviation) > tolerance;
     }
-
     public boolean bufferFilled() {
         return stepIntervals[1] != 0;
     }
@@ -78,7 +77,6 @@ public class Timer {
         updateTimerDisplays();
         TIMER_IDLE = true;
     }
-
     /**
      * Sets both indices back to 0
      */
@@ -90,7 +88,6 @@ public class Timer {
     public double getTimer1() {
         return (double) stepIntervals[0];
     }
-
     public double getTimer2() {
         return (double) stepIntervals[1];
     }
@@ -99,7 +96,7 @@ public class Timer {
      * Updates the TextView instances in MainActivity
      */
     public void updateTimerDisplays() {
-//        MainActivity.setTimer1Display("Timer 1:" + stepIntervals[0]);
-//        MainActivity.setTimer2Display("Timer 2: " + stepIntervals[1]);
+       //MainActivity.setTimer1Display("Timer 1:" + stepIntervals[0]);
+       //MainActivity.setTimer2Display("Timer 2: " + stepIntervals[1]);
     }
 }

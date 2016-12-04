@@ -1,15 +1,14 @@
 package com.example.ziela.gaitsynthesizer;
 
+import android.hardware.SensorManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.widget.TextView;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.MotionEvent;
 import android.view.View.OnTouchListener;
 
 /**
@@ -19,7 +18,7 @@ import android.view.View.OnTouchListener;
 public class MainActivity extends AppCompatActivity
                           implements OnTouchListener, SensorEventListener {
 
-    PowerManager.WakeLock wakeLock;
+    PowerManager.WakeLock wakeLock; // TODO private public?
 
     private FrequencyBuffer[] bufferPool = new FrequencyBuffer[8];
     private double[] scaleFrequencies = new double[8];
@@ -27,14 +26,14 @@ public class MainActivity extends AppCompatActivity
     private int[] minorScaleSteps = {0, 2, 3, 5, 7, 8, 10, 12};
 
     private Timer timer = new Timer();
-    private static int stepCount = 0;
+    private static int stepCount = 0; //TODO move outside?
     private boolean firstStep = true;
     private int lastStep;
 
-    private static TextView stepCountDisplay;
-    private static TextView timer1Display;
-    private static TextView timer2Display;
-    private static TextView deviationDisplay;
+//    private static TextView stepCountDisplay; // TODO move to GUIMain?
+//    private static TextView timer1Display;
+//    private static TextView timer2Display;
+//    private static TextView deviationDisplay;
 
     public static final int ROOT = 0;
     public static final int THIRD = 2;
@@ -52,24 +51,9 @@ public class MainActivity extends AppCompatActivity
         int rootNote = InputActivity.getInputNote(); // starting note in scale
 
         scaleFrequencies = populateScale(rootNote, majorScaleSteps);
-        createFrequencyBufferForEachScaleIndex();
-        //getXMLHandles();
+        createFrequencyBufferForEachScaleIndex(); //TODO
         initializeStepListener();
         configurePowerManager();
-    }
-
-
-    /**
-     * Triggers timer, and advances note sequence on step detection event
-     *
-     * @param event
-     */
-    public void onSensorChanged(SensorEvent event) {
-        Sensor sensor = event.sensor;
-        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            timer.onStep();
-            advanceNoteSequence();
-        }
     }
 
     @Override
@@ -82,6 +66,35 @@ public class MainActivity extends AppCompatActivity
             advanceNoteSequence();
         }
         return false;
+    }
+
+    /**
+     * Trigger timer and advance note sequence on step detection event
+     *
+     * @param event
+     */
+    public void onSensorChanged(SensorEvent event) {
+        Sensor sensor = event.sensor;
+        if (sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            timer.onStep();
+            advanceNoteSequence();
+        }
+    }
+    
+    /**
+     * Initialize a listener for the step detector sensor by accessing the sensor manager and using
+     * it to register an event listener for the phones default step detector at the sensors fastest
+     * sampling speed.
+     */
+    public void initializeStepListener() {
+        SensorManager sensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
+        Sensor stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
+        sensorManager.registerListener(this, stepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Required method to extend sensor event listener
     }
 
     /**
@@ -132,53 +145,11 @@ public class MainActivity extends AppCompatActivity
      * then fills bufferPool[] with these objects.
      */
     public void createFrequencyBufferForEachScaleIndex() {
-        FrequencyBuffer note1 = new FrequencyBuffer(scaleFrequencies[0]);
-        FrequencyBuffer note2 = new FrequencyBuffer(scaleFrequencies[1]);
-        FrequencyBuffer note3 = new FrequencyBuffer(scaleFrequencies[2]);
-        FrequencyBuffer note4 = new FrequencyBuffer(scaleFrequencies[3]);
-        FrequencyBuffer note5 = new FrequencyBuffer(scaleFrequencies[4]);
-        FrequencyBuffer note6 = new FrequencyBuffer(scaleFrequencies[5]);
-        FrequencyBuffer note7 = new FrequencyBuffer(scaleFrequencies[6]);
-        FrequencyBuffer note8 = new FrequencyBuffer(scaleFrequencies[7]);
-
-        bufferPool[0] = note1;
-        bufferPool[1] = note2;
-        bufferPool[2] = note3;
-        bufferPool[3] = note4;
-        bufferPool[4] = note5;
-        bufferPool[5] = note6;
-        bufferPool[6] = note7;
-        bufferPool[7] = note8;
+        for( int i = 0; i < 8; i++ ){
+            bufferPool[ i ] = new FrequencyBuffer( scaleFrequencies[ i ] );
+        }
     }
 
-
-    /**
-     * Retrieves handles to all XML elements we need to modify
-     */
-    /*
-    public void getXMLHandles()
-    {
-        stepCountDisplay = (TextView) findViewById(R.id.mainSteps);
-        timer1Display = (TextView) findViewById(R.id.timer1Text);
-        timer2Display = (TextView) findViewById(R.id.timer2Text);
-        deviationDisplay = (TextView) findViewById(R.id.deviationText);
-
-        View v = findViewById(R.id.simulatorButton);
-
-
-        if (v != null)
-            v.setOnTouchListener(this);
-    }*/
-
-
-    /**
-     * Matt, please rename. What is this doing?
-     */
-    public void initializeStepListener() {
-        SensorManager sensorManager = (SensorManager) getSystemService(this.SENSOR_SERVICE);
-        Sensor stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
-        sensorManager.registerListener(this, stepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
-    }
 
     /**
      * David, please rename
@@ -188,14 +159,13 @@ public class MainActivity extends AppCompatActivity
         wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
     }
 
-
     /**
      * David's
      */
     protected void onResume() {
         super.onResume();
         if (wakeLock.isHeld())
-            wakeLock.release(); //dont need to worry about keeping CPU on, the screen is back on
+            wakeLock.release(); // No longer need to force program to run since screen is on
     }
 
     /**
@@ -203,9 +173,8 @@ public class MainActivity extends AppCompatActivity
      */
     protected void onStop() {
         super.onStop();
-
         if (!wakeLock.isHeld())
-            wakeLock.acquire(); //I want to keep going when the screen is off so keep CPU on
+            wakeLock.acquire(); // Force program to run when the screen is off
     }
 
     public static int getStepCount() {
@@ -216,26 +185,8 @@ public class MainActivity extends AppCompatActivity
         return getFirstStep();
     }
 
-
-    public static void setDeviationDisplay(String message) {
-        deviationDisplay.setText(message);
-    }
-
-    public static void setTimer1Display(String message) {
-        timer1Display.setText(message);
-    }
-
-    public static void setTimer2Display(String message) {
-        timer2Display.setText(message);
-    }
-
     public static void resetStepCount() {
         stepCount = 0;
     }
 
-
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
-    }
 }

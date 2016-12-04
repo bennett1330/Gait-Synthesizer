@@ -45,6 +45,7 @@ public class MainGUI extends View {
             }else {
                 paint.setColor(Color.GREEN); // Set active tone to green
                 canvas.drawCircle(circleXPos[i], circleYPos[i], radius, paint);
+                //paint.setColor(Color.GRAY);
             }
         }
         canvas.drawText("Touch anywhere to play", 100, 80, paint);
@@ -53,10 +54,10 @@ public class MainGUI extends View {
         canvas.drawText(Integer.toString(MainActivity.getStepCount()), 800, 200, paint);
 
         canvas.drawText("Timer 1:" , 80, circleYPos[4] + 300, paint);
-        //canvas.drawText(Integer.toString(Timer.) , 100, circleYPos[7] + 80, paint);
+        canvas.drawText(Integer.toString(Timer.getTimer1()) , 100, circleYPos[7] + 80, paint);
 
         canvas.drawText("Timer 2:" , 860, circleYPos[4] + 300, paint);
-        //can draw text in this as well if we want metrics or other text stuff
+        canvas.drawText(Integer.toString(Timer.getTimer2()) , 100, circleYPos[7] + 80, paint)
         invalidate(); //Tell Android the area needs to be redrawn
     }
 
