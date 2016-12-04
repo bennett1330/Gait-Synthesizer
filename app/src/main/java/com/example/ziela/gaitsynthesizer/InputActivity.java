@@ -83,7 +83,7 @@ public class InputActivity extends AppCompatActivity implements OnTouchListener 
      * then plays this buffer
      */
     public void createBufferAndPlay() {
-        notePreview = new FrequencyBuffer(MainActivity.midiNoteToFrequency(inputMIDINote));
+        notePreview = new FrequencyBuffer(MainActivity.midiToFrequency(inputMIDINote));
         notePreview.play();
     }
 

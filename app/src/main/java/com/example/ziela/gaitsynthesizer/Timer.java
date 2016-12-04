@@ -7,16 +7,20 @@ package com.example.ziela.gaitsynthesizer;
  */
 public class Timer {
     private static double tolerance = 0.15;
-
     private static boolean TIMER_IDLE = true;
     private static long startTime;
     private static long[] stepIntervals = {0, 0};
     private static double deviation;
 
+    public static void resetMetrics() { // TODO move out of class
+        MainActivity.resetStepCount();
+        resetTimer();
+    }
+
     /**
      * Timer routine called every time a step is detected
      */
-    public void onStep() {
+    public static void onStep() {
         if (TIMER_IDLE) // i.e. there's no active timer we have to stop
             start();
         else {
@@ -29,7 +33,7 @@ public class Timer {
     /**
      * Records start time, and puts down TIMER_IDLE flag
      */
-    public void start() {
+    public static void start() {
         startTime = System.currentTimeMillis();
         TIMER_IDLE = false;
     }
@@ -38,11 +42,9 @@ public class Timer {
      * Right shifts array contents to make room for new time,
      * then places the new step interval in index zero
      */
-    public void stop() { // this is not a memory effienct way of doing this, should be able to
-                         // use only one write each time
+    public static void stop() { // TODO use mod to eliminate double rewrites
         stepIntervals[1] = stepIntervals[0]; // shift right to vacate index 0
         stepIntervals[0] = System.currentTimeMillis() - startTime;
-        updateTimerDisplays();
     }
 
     /**
@@ -50,53 +52,28 @@ public class Timer {
      * then compares it against a tolerance value.
      * If outside the tolerance, all times are cleared, and the stepcount is reset.
      */
-    public void compareStepIntervals() {
-        if (bufferFilled()) {
+    public static void compareStepIntervals() {
+        if ( (stepIntervals[0] != 0) && (stepIntervals[1] != 0) ){
             deviation = (double) stepIntervals[0] / stepIntervals[1];
-       //     MainActivity.setDeviationDisplay("Deviation: " +
-       //             String.format("%.1f", (deviation * 100) - 100) + "%");
-            if (outsideTolerance()) {
-                resetMetrics();
-            }
+            if ( !withinTolerance() )
+                resetMetrics(); // TODO update to reflect moved method
         }
     }
-
-    public boolean outsideTolerance() {
-        return Math.abs(1 - deviation) > tolerance;
+    public static boolean withinTolerance() {
+        return Math.abs(1 - deviation) <= tolerance;
     }
-    public boolean bufferFilled() {
-        return stepIntervals[1] != 0;
-    }
-
-    /**
-     * Protocol for handling steps that fall outside of the regularity tolerance
-     */
-    public void resetMetrics() {
-        MainActivity.resetStepCount();
-        resetTimerBuffer();
-        updateTimerDisplays();
-        TIMER_IDLE = true;
-    }
-    /**
-     * Sets both indices back to 0
-     */
-    public void resetTimerBuffer() {
+    public static void resetTimer() { // TODO should not be public?
         stepIntervals[0] = 0;
         stepIntervals[1] = 0;
+        TIMER_IDLE = true;
     }
-
     public static double getTimer1() {
         return (double) stepIntervals[0];
     }
     public static double getTimer2() {
         return (double) stepIntervals[1];
     }
-
-    /**
-     * Updates the TextView instances in MainActivity
-     */
-    public void updateTimerDisplays() {
-       //MainActivity.setTimer1Display("Timer 1:" + stepIntervals[0]);
-       //MainActivity.setTimer2Display("Timer 2: " + stepIntervals[1]);
+    public static double getDeviation() {
+        return deviation;
     }
 }

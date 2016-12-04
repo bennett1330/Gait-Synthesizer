@@ -1,9 +1,5 @@
 package com.example.ziela.gaitsynthesizer;
 
-/**
- * Created by wigleyd on 11/28/2016.
- */
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -44,16 +40,17 @@ public class MainGUI extends View {
             }else {
                 paint.setColor(Color.GREEN); // Set active tone to green
                 canvas.drawCircle(circleXPos[i], circleYPos[i], radius, paint);
-                //paint.setColor(Color.GRAY);
+                paint.setColor(Color.GRAY);
             }
         }
         canvas.drawText("Touch anywhere to play", 100, 80, paint);
-        canvas.drawText("Steps detected: " + Integer.toString(MainActivity.getStepCount()),
-                        100, 200, paint);
-        canvas.drawText("Timer 1: " + Integer.toString( (int) Timer.getTimer1() ),
+        canvas.drawText( String.format("Steps detected: %d", MainActivity.getStepCount() ),
+                         100, 200, paint);
+        canvas.drawText( String.format("Timer 1: %d", (int) Timer.getTimer1() ),
                          80, circleYPos[4] + 300, paint);
-        canvas.drawText("Timer 2: " + Integer.toString( (int) Timer.getTimer2() ),
+        canvas.drawText( String.format("Timer 2: %d", (int) Timer.getTimer2() ),
                         860, circleYPos[4] + 300, paint);
+        invalidate(); // redraw canvas
     }
 
     /**
