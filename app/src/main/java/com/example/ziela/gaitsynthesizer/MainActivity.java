@@ -20,20 +20,15 @@ public class MainActivity extends AppCompatActivity
 
     PowerManager.WakeLock wakeLock; // TODO private public?
 
-    private FrequencyBuffer[] bufferPool = new FrequencyBuffer[8];
-    private double[] scaleFrequencies = new double[8];
-    private int[] majorScaleSteps = {0, 2, 4, 5, 7, 9, 11, 12};
-    private int[] minorScaleSteps = {0, 2, 3, 5, 7, 8, 10, 12};
+    private static FrequencyBuffer[] bufferPool = new FrequencyBuffer[8];
+    private static double[] scaleFrequencies = new double[8];
+    private static final int[] majorScaleSteps = {0, 2, 4, 5, 7, 9, 11, 12};
+    private static final int[] minorScaleSteps = {0, 2, 3, 5, 7, 8, 10, 12};
 
     private Timer timer = new Timer();
-    private static int stepCount = 0; //TODO move outside?
-    private boolean firstStep = true;
-    private int lastStep;
-
-//    private static TextView stepCountDisplay; // TODO move to GUIMain?
-//    private static TextView timer1Display;
-//    private static TextView timer2Display;
-//    private static TextView deviationDisplay;
+    private static int stepCount = 0;
+    private static boolean firstStep = true;
+    private static int lastStep;
 
     public static final int ROOT = 0;
     public static final int THIRD = 2;
@@ -46,7 +41,6 @@ public class MainActivity extends AppCompatActivity
         //uses java class background changer as its layout instead of an xml layout
         View view = new MainGUI(this);
         setContentView(view);
-        //setContentView(R.layout.activity_main);
         view.setOnTouchListener(this);
         int rootNote = InputActivity.getInputNote(); // starting note in scale
 
@@ -55,7 +49,6 @@ public class MainActivity extends AppCompatActivity
         initializeStepListener();
         configurePowerManager();
     }
-
     @Override
     /**
      * Simulated step detect event using button
@@ -67,7 +60,6 @@ public class MainActivity extends AppCompatActivity
         }
         return false;
     }
-
     /**
      * Trigger timer and advance note sequence on step detection event
      *
@@ -80,7 +72,6 @@ public class MainActivity extends AppCompatActivity
             advanceNoteSequence();
         }
     }
-    
     /**
      * Initialize a listener for the step detector sensor by accessing the sensor manager and using
      * it to register an event listener for the phones default step detector at the sensors fastest
@@ -91,7 +82,6 @@ public class MainActivity extends AppCompatActivity
         Sensor stepDetectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         sensorManager.registerListener(this, stepDetectorSensor, SensorManager.SENSOR_DELAY_FASTEST);
     }
-
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
         // Required method to extend sensor event listener
@@ -103,24 +93,27 @@ public class MainActivity extends AppCompatActivity
     public void advanceNoteSequence() {
 //        if (stepCount > 8)
 //            playChord();
-//
         if (!firstStep)
             bufferPool[lastStep].stop();
         bufferPool[stepCount%8].play();
         lastStep = stepCount%8;
-
 //        stepCountDisplay.setText("Step Detector Detected: " + stepCount);
-        stepCount++;
-
-        firstStep = false;
+        stepCount++; // TODO move step count outside music functionality
+        firstStep = false; //TODO is this not just stepCount == 0?
+    }
+    public static void resetStepCount() {
+        stepCount = 0;
+    }
+    public static int getStepCount() {
+        return stepCount;
     }
 
+    // TODO move all music to separate class
     public void playChord() {
         bufferPool[ROOT].play();
         bufferPool[THIRD].play();
         bufferPool[FIFTH].play();
     }
-
     /**
      * Iterates through 8-entry frequency array, populating with
      * scale degrees based on scaleStep array
@@ -132,14 +125,12 @@ public class MainActivity extends AppCompatActivity
         }
         return scaleFrequencies;
     }
-
     /**
      * Returns frequency from input integer MIDI note
      */
     public static double midiNoteToFrequency(int midiNote) {
         return Math.pow(2, (double) (midiNote - 69) / 12) * 440;
     }
-
     /**
      * Creates FrequencyBuffer objects for each frequency in scaleFrequencies[],
      * then fills bufferPool[] with these objects.
@@ -150,7 +141,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-
+    //TODO make this PowerManager extension seperate class?
     /**
      * David, please rename
      */
@@ -158,7 +149,6 @@ public class MainActivity extends AppCompatActivity
         PowerManager mgr = (PowerManager)getSystemService(this.POWER_SERVICE);
         wakeLock = mgr.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "MyWakeLock");
     }
-
     /**
      * David's
      */
@@ -167,7 +157,6 @@ public class MainActivity extends AppCompatActivity
         if (wakeLock.isHeld())
             wakeLock.release(); // No longer need to force program to run since screen is on
     }
-
     /**
      * David's
      */
@@ -176,17 +165,4 @@ public class MainActivity extends AppCompatActivity
         if (!wakeLock.isHeld())
             wakeLock.acquire(); // Force program to run when the screen is off
     }
-
-    public static int getStepCount() {
-        return stepCount;
-    }
-
-    public boolean getFirstStep() {
-        return getFirstStep();
-    }
-
-    public static void resetStepCount() {
-        stepCount = 0;
-    }
-
 }

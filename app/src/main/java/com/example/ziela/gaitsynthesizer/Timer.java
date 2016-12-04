@@ -6,12 +6,12 @@ package com.example.ziela.gaitsynthesizer;
  * through the musical sequence depending on how regular their ratio is.
  */
 public class Timer {
-    private double tolerance = 0.15;
+    private static double tolerance = 0.15;
 
-    private boolean TIMER_IDLE = true;
-    private long startTime;
-    private long[] stepIntervals = {0, 0};
-    private double deviation;
+    private static boolean TIMER_IDLE = true;
+    private static long startTime;
+    private static long[] stepIntervals = {0, 0};
+    private static double deviation;
 
     /**
      * Timer routine called every time a step is detected
@@ -85,10 +85,10 @@ public class Timer {
         stepIntervals[1] = 0;
     }
 
-    public double getTimer1() {
+    public static double getTimer1() {
         return (double) stepIntervals[0];
     }
-    public double getTimer2() {
+    public static double getTimer2() {
         return (double) stepIntervals[1];
     }
 

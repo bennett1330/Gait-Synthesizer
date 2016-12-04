@@ -12,15 +12,15 @@ import android.view.View;
 
 public class MainGUI extends View {
 
+    private Paint paint;
+
+    private static final int radius = 120;
     private static final float START_X_POS = 700;
     private static final float START_Y_POS = 620;
     private static final float X_POS_OFFSET = 200;
     private static final float Y_POS_OFFSET = 200;
-    private float[] circleXPos = new float[8]; // X coordinates of circles
-    private float[] circleYPos = new float[8]; // Y coordinates of circles
-
-    private Paint paint;
-    private static final int radius = 120;
+    private static float[] circleXPos = new float[8]; // X coordinates of circles
+    private static float[] circleYPos = new float[8]; // Y coordinates of circles
 
     public MainGUI(Context context) {
         super(context);
@@ -31,11 +31,10 @@ public class MainGUI extends View {
 
     @Override
     /*
-     * Creating my own onDraw method to flag to android to draw the screen using this logic rather
-      * than XML stuff
+     * Draws GUI using canvas rather than XML files
      */
     protected void onDraw(Canvas canvas) {
-        int localCounter= MainActivity.getStepCount();
+        int localCounter = MainActivity.getStepCount();
         canvas.drawColor(Color.WHITE);
         for (int i = 0; i < 8; i ++){
             paint.setColor(Color.GRAY); // Gray circles indicate non-active tones
@@ -49,16 +48,12 @@ public class MainGUI extends View {
             }
         }
         canvas.drawText("Touch anywhere to play", 100, 80, paint);
-
-        canvas.drawText("Steps detected: ", 100, 200, paint);
-        canvas.drawText(Integer.toString(MainActivity.getStepCount()), 800, 200, paint);
-
-        canvas.drawText("Timer 1:" , 80, circleYPos[4] + 300, paint);
-        canvas.drawText(Integer.toString(Timer.getTimer1()) , 100, circleYPos[7] + 80, paint);
-
-        canvas.drawText("Timer 2:" , 860, circleYPos[4] + 300, paint);
-        canvas.drawText(Integer.toString(Timer.getTimer2()) , 100, circleYPos[7] + 80, paint)
-        invalidate(); //Tell Android the area needs to be redrawn
+        canvas.drawText("Steps detected: " + Integer.toString(MainActivity.getStepCount()),
+                        100, 200, paint);
+        canvas.drawText("Timer 1: " + Integer.toString( (int) Timer.getTimer1() ),
+                         80, circleYPos[4] + 300, paint);
+        canvas.drawText("Timer 2: " + Integer.toString( (int) Timer.getTimer2() ),
+                        860, circleYPos[4] + 300, paint);
     }
 
     /**
